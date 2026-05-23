@@ -1,11 +1,19 @@
 # Mini Application Workflow Tracker
 
 - `backend/`: Django + Django Ninja API
-- `frontend/`: React + TypeScript + Vite client
+- `frontend/`: React + TypeScript + Vite client using Tailwind CSS
 
 Workflow:
 
 `Draft -> Submitted -> Under Review -> Need More Information | Approved | Rejected`
+
+Current capabilities:
+
+- session-based authentication
+- open signup for applicants and reviewers
+- role-based application access and actions
+- reviewer decision history
+- application search and filtering
 
 ## Backend setup
 
@@ -34,6 +42,14 @@ The frontend runs at `http://127.0.0.1:5173`.
 
 Vite proxies `/api` requests to the Django backend in development, so no additional CORS setup is required.
 
+## Authentication and roles
+
+- Applicants can sign up, log in, create applications, and see only their own applications.
+- Reviewers can sign up, log in, see all applications, and perform review actions.
+- Reviewer accounts require a company name at signup.
+
+Use the frontend signup flow to create an applicant or reviewer account before using the application screens.
+
 ## Running migrations
 
 From `backend/`:
@@ -60,6 +76,10 @@ The frontend build is used as the main compile/type-check verification step.
 
 ## API endpoints
 
+- `GET /api/auth/session`
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
 - `POST /api/applications`
 - `GET /api/applications`
 - `GET /api/applications/{tracking_number}`
@@ -68,21 +88,28 @@ The frontend build is used as the main compile/type-check verification step.
 - `POST /api/applications/{tracking_number}/start-review`
 - `POST /api/applications/{tracking_number}/decision`
 
-List and detail responses include `allowed_actions` so the frontend renders only valid actions for the current status.
+Application list responses support:
+
+- `search`
+- `status`
+- `application_type`
+
+List and detail responses include `allowed_actions`, and detail responses include reviewer decision history.
 
 ## Assumptions made
 
-- No authentication or role separation is implemented because the brief did not require it.
 - Draft creation requires the main applicant/company/type/description fields rather than supporting partially blank drafts.
 - `Need More Information` applications are resubmitted through the same submit endpoint used for drafts.
-- `reviewer_comment` stores the latest reviewer note, not a full comment history.
-- `submitted_at` is updated on each submit or resubmit.
-- `reviewed_at` stores the timestamp of the latest reviewer decision.
+- Reviewer accounts are treated as company-side review accounts and can access all applications.
+- Applicant accounts can access only the applications they own.
+- Reviewer comments are stored as a chronological decision log rather than a threaded discussion system.
+
 
 ## What I would improve with more time
 
-- Add authentication and reviewer/applicant role separation.
 - Add frontend integration tests for the main workflow transitions.
-- Add reviewer comment history instead of a single latest comment field.
-- Add filtering and search on the application list.
+- Reviewers can only view applications for their own company, not all applications.
+- Add password reset and email verification flows.
+- Add pagination and richer list filtering, including date ranges.
+- Add reviewer assignment rules instead of a global review queue for all reviewers.
 - Package the project with Docker Compose for one-command local startup.

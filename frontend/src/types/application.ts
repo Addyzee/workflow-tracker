@@ -35,6 +35,7 @@ export interface ApplicationFormValues {
 export interface ApplicationSummary {
   tracking_number: string;
   applicant_name: string;
+  applicant_email: string;
   company_name: string;
   application_type: string;
   status: string;
@@ -42,13 +43,21 @@ export interface ApplicationSummary {
   allowed_actions: AllowedAction[];
 }
 
+export interface ReviewHistoryEntry {
+  decision_status: string;
+  comment: string;
+  reviewer_name: string;
+  reviewer_email: string | null;
+  reviewer_company_name: string | null;
+  created_at: string;
+}
+
 export interface ApplicationDetail extends ApplicationSummary {
-  applicant_email: string;
   description: string;
-  reviewer_comment: string;
   updated_at: string;
   submitted_at: string | null;
   reviewed_at: string | null;
+  review_history: ReviewHistoryEntry[];
 }
 
 export interface DecisionPayload {
@@ -56,3 +65,8 @@ export interface DecisionPayload {
   reviewer_comment?: string;
 }
 
+export interface ApplicationListFilters {
+  search?: string;
+  status?: string;
+  application_type?: string;
+}

@@ -4,6 +4,14 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { createApplication, getApplication, updateApplication } from "../api/applications";
 import { ApiError } from "../api/client";
 import ApplicationForm from "../components/ApplicationForm";
+import { useAuth } from "../context/AuthContext";
+import {
+  cardTitleClass,
+  labelClass,
+  panelClass,
+  panelPaddingClass,
+  sectionTitleClass,
+} from "../lib/ui";
 import {
   APPLICATION_TYPES,
   type ApplicationDetail,
@@ -32,6 +40,7 @@ export default function ApplicationFormPage() {
   const { trackingNumber } = useParams();
   const isEditMode = Boolean(trackingNumber);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [formValues, setFormValues] = useState<ApplicationFormValues>(EMPTY_FORM);
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
@@ -41,7 +50,13 @@ export default function ApplicationFormPage() {
 
   useEffect(() => {
     if (!trackingNumber) {
-      setFormValues(EMPTY_FORM);
+      setFormValues({
+        applicant_name: user?.display_name ?? "",
+        applicant_email: user?.email ?? "",
+        company_name: user?.company_name ?? "",
+        application_type: APPLICATION_TYPES[0],
+        description: "",
+      });
       setApplication(null);
       setIsLoading(false);
       return;
@@ -75,7 +90,7 @@ export default function ApplicationFormPage() {
     return () => {
       active = false;
     };
-  }, [trackingNumber]);
+  }, [trackingNumber, user]);
 
   async function handleSubmit(values: ApplicationFormValues) {
     setIsSubmitting(true);
@@ -99,26 +114,29 @@ export default function ApplicationFormPage() {
   const showLoadError = !isLoading && isEditMode && !application && errorMessage;
 
   return (
-    <section className="page-grid">
-      <div className="page-heading">
-        <div>
-          <p className="folio">{isEditMode ? "03" : "02"}</p>
-          <h2>{isEditMode ? "Edit application" : "Create application draft"}</h2>
-        </div>
+    <section className="grid gap-5">
+      <div>
+        <p className={labelClass}>{isEditMode ? "Edit" : "Create"}</p>
+        <h2 className={sectionTitleClass}>{isEditMode ? "Edit application" : "Create application draft"}</h2>
       </div>
 
-      {isLoading ? <p className="panel">Loading application...</p> : null}
-      {showLoadError ? <p className="panel error-panel">{errorMessage}</p> : null}
+      {isLoading ? <p className={panelPaddingClass}>Loading application...</p> : null}
+      {showLoadError ? <p className="border border-[#efc9cf] bg-[#fff4f5] p-4 text-sm text-[#9c1c25]">{errorMessage}</p> : null}
 
       {!isLoading && isEditMode && application && !canEdit ? (
-        <div className="panel error-panel">
+        <div className="border border-[#efc9cf] bg-[#fff4f5] p-4 text-sm text-[#9c1c25]">
           <p>This application cannot be edited in its current status.</p>
-          <Link to={`/applications/${application.tracking_number}`}>Back to application</Link>
+          <Link className="mt-2 inline-block border-b border-current" to={`/applications/${application.tracking_number}`}>
+            Back to detail
+          </Link>
         </div>
       ) : null}
 
       {!isLoading && (!isEditMode || application) && canEdit ? (
-        <div className="panel form-panel">
+        <div className={panelClass}>
+          <div className="border-b border-[#d7d7db] px-5 py-4">
+            <h3 className={cardTitleClass}>{isEditMode ? "Edit" : "Create"}</h3>
+          </div>
           <ApplicationForm
             initialValues={formValues}
             submitLabel={isEditMode ? "Save changes" : "Save draft"}

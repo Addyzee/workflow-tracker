@@ -24,9 +24,19 @@ class ApplicationDecisionIn(Schema):
     reviewer_comment: str | None = None
 
 
+class ApplicationReviewHistoryOut(Schema):
+    decision_status: str
+    comment: str
+    reviewer_name: str
+    reviewer_email: str | None
+    reviewer_company_name: str | None
+    created_at: datetime
+
+
 class ApplicationSummaryOut(Schema):
     tracking_number: str
     applicant_name: str
+    applicant_email: str
     company_name: str
     application_type: str
     status: str
@@ -42,10 +52,9 @@ class ApplicationDetailOut(Schema):
     application_type: str
     description: str
     status: str
-    reviewer_comment: str
     created_at: datetime
     updated_at: datetime
     submitted_at: datetime | None
     reviewed_at: datetime | None
     allowed_actions: list[str]
-
+    review_history: list[ApplicationReviewHistoryOut]

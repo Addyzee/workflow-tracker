@@ -1,5 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 
+import {
+  errorPanelClass,
+  inputClass,
+  primaryButtonClass,
+  selectClass,
+  textareaClass,
+} from "../lib/ui";
 import { APPLICATION_TYPES, type ApplicationFormValues } from "../types/application";
 
 interface ApplicationFormProps {
@@ -75,41 +82,45 @@ export default function ApplicationForm({
   };
 
   return (
-    <form className="application-form" onSubmit={handleSubmit}>
-      <div className="form-grid">
-        <label>
-          <span>Applicant name</span>
+    <form className="grid gap-5 p-5" onSubmit={handleSubmit}>
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-[#111111]">Applicant name</span>
           <input
+            className={inputClass}
             type="text"
             value={values.applicant_name}
             onChange={(event) => handleChange("applicant_name", event.target.value)}
           />
-          {fieldErrors.applicant_name ? <small>{fieldErrors.applicant_name}</small> : null}
+          {fieldErrors.applicant_name ? <small className="text-sm text-[#9c1c25]">{fieldErrors.applicant_name}</small> : null}
         </label>
 
-        <label>
-          <span>Applicant email</span>
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-[#111111]">Applicant email</span>
           <input
+            className={inputClass}
             type="email"
             value={values.applicant_email}
             onChange={(event) => handleChange("applicant_email", event.target.value)}
           />
-          {fieldErrors.applicant_email ? <small>{fieldErrors.applicant_email}</small> : null}
+          {fieldErrors.applicant_email ? <small className="text-sm text-[#9c1c25]">{fieldErrors.applicant_email}</small> : null}
         </label>
 
-        <label>
-          <span>Company name</span>
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-[#111111]">Company name</span>
           <input
+            className={inputClass}
             type="text"
             value={values.company_name}
             onChange={(event) => handleChange("company_name", event.target.value)}
           />
-          {fieldErrors.company_name ? <small>{fieldErrors.company_name}</small> : null}
+          {fieldErrors.company_name ? <small className="text-sm text-[#9c1c25]">{fieldErrors.company_name}</small> : null}
         </label>
 
-        <label>
-          <span>Application type</span>
+        <label className="grid gap-2">
+          <span className="text-sm font-semibold text-[#111111]">Application type</span>
           <select
+            className={selectClass}
             value={values.application_type}
             onChange={(event) => handleChange("application_type", event.target.value as ApplicationFormValues["application_type"])}
           >
@@ -119,24 +130,25 @@ export default function ApplicationForm({
               </option>
             ))}
           </select>
-          {fieldErrors.application_type ? <small>{fieldErrors.application_type}</small> : null}
+          {fieldErrors.application_type ? <small className="text-sm text-[#9c1c25]">{fieldErrors.application_type}</small> : null}
         </label>
       </div>
 
-      <label className="form-textarea">
-        <span>Description</span>
+      <label className="grid gap-2">
+        <span className="text-sm font-semibold text-[#111111]">Description</span>
         <textarea
+          className={textareaClass}
           rows={8}
           value={values.description}
           onChange={(event) => handleChange("description", event.target.value)}
         />
-        {fieldErrors.description ? <small>{fieldErrors.description}</small> : null}
+        {fieldErrors.description ? <small className="text-sm text-[#9c1c25]">{fieldErrors.description}</small> : null}
       </label>
 
-      {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
+      {errorMessage ? <p className={errorPanelClass}>{errorMessage}</p> : null}
 
-      <div className="form-actions">
-        <button type="submit" className="button-primary" disabled={isSubmitting}>
+      <div className="flex flex-wrap gap-3">
+        <button type="submit" className={primaryButtonClass} disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : submitLabel}
         </button>
       </div>

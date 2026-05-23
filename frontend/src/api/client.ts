@@ -9,14 +9,33 @@ export class ApiError extends Error {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+let csrfToken: string | null = null;
+
+export function setCsrfToken(token: string | null) {
+  csrfToken = token;
+}
+
+export function clearCsrfToken() {
+  csrfToken = null;
+}
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers ?? {});
+  const method = (init?.method ?? "GET").toUpperCase();
+  const hasBody = init?.body !== undefined;
+
+  if (hasBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method) && csrfToken) {
+    headers.set("X-CSRFToken", csrfToken);
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
+    credentials: "include",
+    headers,
   });
 
   if (!response.ok) {
@@ -40,4 +59,3 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   return (await response.json()) as T;
 }
-

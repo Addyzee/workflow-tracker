@@ -2,12 +2,25 @@ import { request } from "./client";
 import type {
   ApplicationDetail,
   ApplicationFormValues,
+  ApplicationListFilters,
   ApplicationSummary,
   DecisionPayload,
 } from "../types/application";
 
-export function listApplications() {
-  return request<ApplicationSummary[]>("/applications");
+export function listApplications(filters?: ApplicationListFilters) {
+  const searchParams = new URLSearchParams();
+  if (filters?.search) {
+    searchParams.set("search", filters.search);
+  }
+  if (filters?.status) {
+    searchParams.set("status", filters.status);
+  }
+  if (filters?.application_type) {
+    searchParams.set("application_type", filters.application_type);
+  }
+
+  const query = searchParams.toString();
+  return request<ApplicationSummary[]>(`/applications${query ? `?${query}` : ""}`);
 }
 
 export function getApplication(trackingNumber: string) {
@@ -48,4 +61,3 @@ export function recordDecision(trackingNumber: string, payload: DecisionPayload)
     body: JSON.stringify(payload),
   });
 }
-

@@ -1,3 +1,5 @@
+import { cn } from "../lib/ui";
+
 interface StatusBadgeProps {
   status: string;
 }
@@ -5,23 +7,31 @@ interface StatusBadgeProps {
 function toneForStatus(status: string) {
   switch (status) {
     case "Draft":
-      return "neutral";
+      return "border-[#d7d7db] text-[#111111]";
     case "Submitted":
-      return "info";
+      return "border-[#b7c8e6] text-[#194b8f]";
     case "Under Review":
-      return "warning";
+      return "border-[#f0d2a0] text-[#905600]";
     case "Need More Information":
-      return "accent";
+      return "border-[#f1c3cd] text-[#e4002b]";
     case "Approved":
-      return "success";
+      return "border-[#beddcd] text-[#177245]";
     case "Rejected":
-      return "danger";
+      return "border-[#efc9cf] text-[#9c1c25]";
     default:
-      return "neutral";
+      return "border-[#d7d7db] text-[#111111]";
   }
 }
 
 export default function StatusBadge({ status }: StatusBadgeProps) {
-  return <span className={`status-badge ${toneForStatus(status)}`}>{status}</span>;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]",
+        toneForStatus(status),
+      )}
+    >
+      {status}
+    </span>
+  );
 }
-

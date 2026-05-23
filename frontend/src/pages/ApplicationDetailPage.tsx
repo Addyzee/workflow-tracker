@@ -10,6 +10,20 @@ import {
 import { ApiError } from "../api/client";
 import ActionButtons from "../components/ActionButtons";
 import StatusBadge from "../components/StatusBadge";
+import { useAuth } from "../context/AuthContext";
+import {
+  cardTitleClass,
+  errorPanelClass,
+  labelClass,
+  linkUnderlineClass,
+  panelClass,
+  panelPaddingClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+  sectionTitleClass,
+  successPanelClass,
+  textareaClass,
+} from "../lib/ui";
 import type { ApplicationDetail, ReviewDecision } from "../types/application";
 
 type DecisionAction = "approve" | "request_more_info" | "reject";
@@ -37,6 +51,7 @@ function formatDateTime(value: string | null) {
 export default function ApplicationDetailPage() {
   const { trackingNumber } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,30 +147,39 @@ export default function ApplicationDetailPage() {
   }
 
   if (isLoading) {
-    return <p className="panel">Loading application...</p>;
+    return <p className={panelPaddingClass}>Loading application...</p>;
   }
 
   if (errorMessage && !application) {
-    return <p className="panel error-panel">{errorMessage}</p>;
+    return <p className={errorPanelClass}>{errorMessage}</p>;
   }
 
   if (!application) {
-    return <p className="panel error-panel">Application not found.</p>;
+    return <p className={errorPanelClass}>Application not found.</p>;
   }
 
   return (
-    <section className="detail-layout">
-      <div className="detail-hero panel">
-        <p className="folio">04</p>
-        <p className="tracking-hero">{application.tracking_number}</p>
-        <div className="detail-title-row">
+    <section className="grid gap-5">
+      <div>
+        <p className={labelClass}>Detail</p>
+        <h2 className={sectionTitleClass}>Application detail</h2>
+      </div>
+
+      <div className={`${panelClass} grid gap-5 p-5`}>
+        <p className="m-0 text-[clamp(2.8rem,10vw,7rem)] leading-[0.9] tracking-[-0.07em] text-balance text-[#111111]">
+          {application.tracking_number}
+        </p>
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
           <div>
-            <h2>{application.company_name}</h2>
-            <p>{application.applicant_name}</p>
+            <h3 className={cardTitleClass}>{application.company_name}</h3>
+            <p className="mt-2 text-sm text-[#636366]">
+              {application.applicant_name}
+              {user?.role === "reviewer" ? ` · ${application.applicant_email}` : ""}
+            </p>
           </div>
           <StatusBadge status={application.status} />
         </div>
-        <div className="detail-actions">
+        <div className="flex flex-wrap gap-3">
           <ActionButtons
             actions={application.allowed_actions}
             isBusy={isWorking}
@@ -177,80 +201,105 @@ export default function ApplicationDetailPage() {
             onDecision={openDecision}
           />
         </div>
-        {successMessage ? <p className="success-panel">{successMessage}</p> : null}
-        {errorMessage ? <p className="error-panel">{errorMessage}</p> : null}
+        {successMessage ? <p className={successPanelClass}>{successMessage}</p> : null}
+        {errorMessage ? <p className={errorPanelClass}>{errorMessage}</p> : null}
       </div>
 
-      <div className="detail-columns">
-        <div className="panel">
-          <h3>Application details</h3>
-          <dl className="meta-grid">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className={`${panelClass} p-5`}>
+          <h3 className={cardTitleClass}>Application details</h3>
+          <dl className="mt-5 grid gap-5 md:grid-cols-2">
             <div>
-              <dt>Applicant email</dt>
-              <dd>{application.applicant_email}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Applicant email</dt>
+              <dd className="m-0 text-sm text-[#111111]">{application.applicant_email}</dd>
             </div>
             <div>
-              <dt>Application type</dt>
-              <dd>{application.application_type}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Application type</dt>
+              <dd className="m-0 text-sm text-[#111111]">{application.application_type}</dd>
             </div>
             <div>
-              <dt>Created</dt>
-              <dd>{formatDateTime(application.created_at)}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Created</dt>
+              <dd className="m-0 text-sm text-[#111111]">{formatDateTime(application.created_at)}</dd>
             </div>
             <div>
-              <dt>Updated</dt>
-              <dd>{formatDateTime(application.updated_at)}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Updated</dt>
+              <dd className="m-0 text-sm text-[#111111]">{formatDateTime(application.updated_at)}</dd>
             </div>
             <div>
-              <dt>Submitted</dt>
-              <dd>{formatDateTime(application.submitted_at)}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Submitted</dt>
+              <dd className="m-0 text-sm text-[#111111]">{formatDateTime(application.submitted_at)}</dd>
             </div>
             <div>
-              <dt>Reviewed</dt>
-              <dd>{formatDateTime(application.reviewed_at)}</dd>
+              <dt className="mb-1 text-[0.8rem] text-[#636366]">Reviewed</dt>
+              <dd className="m-0 text-sm text-[#111111]">{formatDateTime(application.reviewed_at)}</dd>
             </div>
           </dl>
         </div>
 
-        <div className="panel">
-          <h3>Description</h3>
-          <p className="description-copy">{application.description}</p>
-          {application.reviewer_comment ? (
-            <>
-              <h3>Reviewer comment</h3>
-              <p className="description-copy">{application.reviewer_comment}</p>
-            </>
-          ) : null}
+        <div className={`${panelClass} p-5`}>
+          <h3 className={cardTitleClass}>Description</h3>
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-[#636366]">{application.description}</p>
         </div>
       </div>
 
-      {decisionStatus ? (
-        <div className="panel decision-panel">
-          <div className="decision-heading">
+      <div className={`${panelClass} p-5`}>
+        <h3 className={cardTitleClass}>Review history</h3>
+        {application.review_history.length > 0 ? (
+          <div className="mt-5 grid gap-4">
+            {application.review_history.map((entry, index) => (
+              <div
+                key={`${entry.created_at}-${index}`}
+                className="grid gap-3 border-t border-[#d7d7db] pt-4 first:border-t-0 first:pt-0"
+              >
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <p className="m-0 text-sm font-semibold text-[#111111]">{entry.reviewer_name}</p>
+                    <p className="m-0 text-sm text-[#636366]">
+                      {[entry.reviewer_email, entry.reviewer_company_name].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-2 md:items-end">
+                    <StatusBadge status={entry.decision_status} />
+                    <p className="m-0 text-xs text-[#636366]">{formatDateTime(entry.created_at)}</p>
+                  </div>
+                </div>
+                <p className="m-0 whitespace-pre-wrap text-sm leading-6 text-[#636366]">
+                  {entry.comment || "No reviewer comment."}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-[#636366]">No reviewer decisions have been recorded yet.</p>
+        )}
+      </div>
+
+      {decisionStatus && user?.role === "reviewer" ? (
+        <div className={`${panelClass} p-5`}>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="folio">Decision</p>
-              <h3>{decisionStatus}</h3>
+              <p className={labelClass}>Decision</p>
+              <h3 className={cardTitleClass}>{decisionStatus}</h3>
             </div>
-            <button type="button" className="button-secondary" onClick={() => setDecisionStatus(null)}>
+            <button type="button" className={secondaryButtonClass} onClick={() => setDecisionStatus(null)}>
               Cancel
             </button>
           </div>
-          <form onSubmit={handleDecisionSubmit}>
-            <label className="form-textarea">
-              <span>Reviewer comment</span>
+          <form className="mt-5 grid gap-5" onSubmit={handleDecisionSubmit}>
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-[#111111]">Reviewer comment</span>
               <textarea
+                className={textareaClass}
                 rows={5}
                 value={reviewerComment}
                 onChange={(event) => setReviewerComment(event.target.value)}
                 placeholder={
-                  decisionStatus === "Approved"
-                    ? "Optional comment"
-                    : "Required reviewer comment"
+                  decisionStatus === "Approved" ? "Optional comment" : "Required reviewer comment"
                 }
               />
             </label>
-            <div className="form-actions">
-              <button type="submit" className="button-primary" disabled={isWorking}>
+            <div className="flex flex-wrap gap-3">
+              <button type="submit" className={primaryButtonClass} disabled={isWorking}>
                 {isWorking ? "Saving..." : "Record decision"}
               </button>
             </div>
@@ -258,7 +307,7 @@ export default function ApplicationDetailPage() {
         </div>
       ) : null}
 
-      <Link to="/" className="back-link">
+      <Link to="/" className={linkUnderlineClass}>
         Back to applications
       </Link>
     </section>

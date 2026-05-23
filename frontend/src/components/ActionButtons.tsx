@@ -1,4 +1,9 @@
 import type { AllowedAction } from "../types/application";
+import {
+  dangerButtonClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+} from "../lib/ui";
 
 interface ActionButtonsProps {
   actions: AllowedAction[];
@@ -28,15 +33,15 @@ export default function ActionButtons({
   onDecision,
 }: ActionButtonsProps) {
   if (actions.length === 0) {
-    return <p className="empty-actions">No further actions are available for this application.</p>;
+    return <p className="text-sm text-[#636366]">No further actions are available for this application.</p>;
   }
 
   return (
-    <div className="action-row">
+    <div className="flex flex-wrap gap-3">
       {actions.map((action) => {
         if (action === "edit") {
           return (
-            <button key={action} type="button" className="button-secondary" disabled={isBusy} onClick={onEdit}>
+            <button key={action} type="button" className={secondaryButtonClass} disabled={isBusy} onClick={onEdit}>
               {LABELS[action]}
             </button>
           );
@@ -44,7 +49,7 @@ export default function ActionButtons({
 
         if (action === "submit" || action === "resubmit") {
           return (
-            <button key={action} type="button" className="button-primary" disabled={isBusy} onClick={onSubmit}>
+            <button key={action} type="button" className={primaryButtonClass} disabled={isBusy} onClick={onSubmit}>
               {LABELS[action]}
             </button>
           );
@@ -55,7 +60,7 @@ export default function ActionButtons({
             <button
               key={action}
               type="button"
-              className="button-primary"
+              className={primaryButtonClass}
               disabled={isBusy}
               onClick={onStartReview}
             >
@@ -68,7 +73,7 @@ export default function ActionButtons({
           <button
             key={action}
             type="button"
-            className={action === "reject" ? "button-danger" : "button-secondary"}
+            className={action === "reject" ? dangerButtonClass : secondaryButtonClass}
             disabled={isBusy}
             onClick={() => onDecision(action)}
           >
@@ -79,4 +84,3 @@ export default function ActionButtons({
     </div>
   );
 }
-

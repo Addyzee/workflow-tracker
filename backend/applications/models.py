@@ -1,5 +1,6 @@
 import secrets
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -27,6 +28,13 @@ class ApplicationStatus(models.TextChoices):
 
 class Application(models.Model):
     tracking_number = models.CharField(max_length=32, unique=True, editable=False)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="applications",
+    )
     applicant_name = models.CharField(max_length=255)
     applicant_email = models.EmailField()
     company_name = models.CharField(max_length=255)
@@ -37,7 +45,6 @@ class Application(models.Model):
         choices=ApplicationStatus.choices,
         default=ApplicationStatus.DRAFT,
     )
-    reviewer_comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
@@ -60,3 +67,26 @@ class Application(models.Model):
                 raise ValueError("Unable to generate a unique tracking number.")
         super().save(*args, **kwargs)
 
+
+class ApplicationReviewHistory(models.Model):
+    application = models.ForeignKey(
+        Application,
+        on_delete=models.CASCADE,
+        related_name="review_history",
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="review_history_entries",
+    )
+    decision_status = models.CharField(max_length=32, choices=ApplicationStatus.choices)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self) -> str:
+        return f"{self.application.tracking_number} - {self.decision_status}"
