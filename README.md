@@ -83,7 +83,7 @@ The frontend build is used as the main compile/type-check verification step.
 
 ## Docker and deployment
 
-The repo now includes:
+Deployment is on a VPS using Docker.
 
 - `backend/Dockerfile` for the Django backend
 - `docker-compose.yml` for a backend-only deployment
@@ -91,7 +91,7 @@ The repo now includes:
 - `.github/workflows/deploy-backend.yml` for backend CD to a VPS
 - `backend/deploy.sh` for pulling the latest image, running migrations, and restarting the backend container
 
-The Docker setup uses SQLite with a persistent Docker volume. SQLite does not need its own container.
+The Docker setup uses SQLite with a persistent Docker volume.
 
 For local Docker use:
 
@@ -104,7 +104,6 @@ For production:
 
 - set the real backend env values in `backend/.env` on the VPS
 - set the real frontend API URL in Vercel using `VITE_API_BASE_URL`
-- `git pull` on the VPS before deploying changes that affect `docker-compose.yml` or `backend/deploy.sh`
 
 ## API endpoints
 
@@ -141,6 +140,7 @@ List and detail responses include `allowed_actions`, and detail responses includ
 ## What I would improve with more time
 
 - Add frontend integration tests for the main workflow transitions.
+- Reviewers should only view applications to their company, not all applications.
 - Add password reset and email verification flows.
 - Add pagination and richer list filtering, including date ranges.
 - Add reviewer assignment rules instead of a global review queue for all reviewers.

@@ -16,6 +16,11 @@ services:
     restart: unless-stopped
     volumes:
       - workflow_tracker_sqlite:/data
+    networks:
+      - smeazy-network
 
 volumes:
   workflow_tracker_sqlite:
+networks:
+    smeazy-network:
+      external: true
