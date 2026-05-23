@@ -1,0 +1,21 @@
+name: trendflow-workflow
+
+services:
+  workflow-tracker-backend:
+    container_name: workflow-tracker-backend
+    image: ${BACKEND_IMAGE:-workflow-tracker-backend:local}
+    build:
+      context: ./backend
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      DJANGO_SQLITE_PATH: /data/db.sqlite3
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    restart: unless-stopped
+    volumes:
+      - workflow_tracker_sqlite:/data
+
+volumes:
+  workflow_tracker_sqlite:

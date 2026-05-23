@@ -20,6 +20,7 @@ Current capabilities:
 From the `backend/` directory:
 
 ```bash
+cp .env.example .env
 uv sync
 .venv/bin/python manage.py migrate
 .venv/bin/python manage.py runserver
@@ -34,6 +35,7 @@ API docs at `http://127.0.0.1:8000/api/docs`.
 From the `frontend/` directory:
 
 ```bash
+cp .env.example .env
 pnpm install
 pnpm dev
 ```
@@ -41,6 +43,11 @@ pnpm dev
 The frontend runs at `http://127.0.0.1:5173`.
 
 Vite proxies `/api` requests to the Django backend in development, so no additional CORS setup is required.
+
+For local development, keep:
+
+- `frontend/.env`: `VITE_API_BASE_URL=http://127.0.0.1:8000/api`
+- `backend/.env`: allow `http://localhost:5173` and `http://127.0.0.1:5173` in CORS and CSRF settings
 
 ## Authentication and roles
 
@@ -74,6 +81,31 @@ pnpm build
 
 The frontend build is used as the main compile/type-check verification step.
 
+## Docker and deployment
+
+The repo now includes:
+
+- `backend/Dockerfile` for the Django backend
+- `docker-compose.yml` for a backend-only deployment
+- `.github/workflows/backend-ci.yml` for backend CI
+- `.github/workflows/deploy-backend.yml` for backend CD to a VPS
+- `backend/deploy.sh` for pulling the latest image, running migrations, and restarting the backend container
+
+The Docker setup uses SQLite with a persistent Docker volume. SQLite does not need its own container.
+
+For local Docker use:
+
+```bash
+cp backend/.env.example backend/.env
+docker compose up --build
+```
+
+For production:
+
+- set the real backend env values in `backend/.env` on the VPS
+- set the real frontend API URL in Vercel using `VITE_API_BASE_URL`
+- `git pull` on the VPS before deploying changes that affect `docker-compose.yml` or `backend/deploy.sh`
+
 ## API endpoints
 
 - `GET /api/auth/session`
@@ -103,13 +135,13 @@ List and detail responses include `allowed_actions`, and detail responses includ
 - Reviewer accounts are treated as company-side review accounts and can access all applications.
 - Applicant accounts can access only the applications they own.
 - Reviewer comments are stored as a chronological decision log rather than a threaded discussion system.
+- SQLite is used for both local and VPS deployment, backed by a persistent Docker volume in the containerized setup.
 
 
 ## What I would improve with more time
 
 - Add frontend integration tests for the main workflow transitions.
-- Reviewers can only view applications for their own company, not all applications.
 - Add password reset and email verification flows.
 - Add pagination and richer list filtering, including date ranges.
 - Add reviewer assignment rules instead of a global review queue for all reviewers.
-- Package the project with Docker Compose for one-command local startup.
+- Add automated SQLite backup and restore scripts for VPS deployments.

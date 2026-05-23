@@ -9,4 +9,10 @@ build/
 .venv/
 venv/
 backend/db.sqlite3
-
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+docker-compose.override.yml
