@@ -90,4 +90,4 @@ jobs:
         run: |
           APP_DIR="${VPS_APP_DIR:-\$HOME/workflow-tracker}"
           ssh -p 22 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-            "GHCR_USERNAME='${{ secrets.GHCR_USERNAME }}' GHCR_TOKEN='${{ secrets.GHCR_TOKEN }}' BACKEND_IMAGE='${{ env.IMAGE_NAME }}:latest' RUN_BACKEND_MIGRATIONS=1 bash ${APP_DIR}/backend/deploy.sh"
+            "BACKEND_IMAGE='${{ env.IMAGE_NAME }}:latest' RUN_BACKEND_MIGRATIONS=1 bash ${APP_DIR}/backend/deploy.sh"

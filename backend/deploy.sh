@@ -16,10 +16,6 @@ fi
 
 cd "$REPO_ROOT"
 
-if [[ -n "${GHCR_USERNAME:-}" && -n "${GHCR_TOKEN:-}" ]]; then
-  echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-fi
-
 # Validate compose & env interpolation
 "${compose_cmd[@]}" config >/dev/null
 

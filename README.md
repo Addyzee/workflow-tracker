@@ -1,5 +1,9 @@
 # Mini Application Workflow Tracker
 
+## By
+- Andrew Kimani
+- andrewkamaukim@gmail.com
+
 - `backend/`: Django + Django Ninja API
 - `frontend/`: React + TypeScript + Vite client using Tailwind CSS
 
