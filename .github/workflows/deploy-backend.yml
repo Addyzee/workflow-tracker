@@ -12,6 +12,9 @@ concurrency:
   group: deploy-backend
   cancel-in-progress: true
 
+env:
+  IMAGE_NAME: ghcr.io/addyzee/workflow-tracker-backend
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -42,9 +45,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
-    env:
-      IMAGE_NAME: ghcr.io/addyzee/workflow-tracker-backend
 
     steps:
       - uses: actions/checkout@v4
