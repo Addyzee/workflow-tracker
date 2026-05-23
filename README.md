@@ -4,6 +4,8 @@
 - Andrew Kimani
 - andrewkamaukim@gmail.com
 
+## Project
+
 - `backend/`: Django + Django Ninja API
 - `frontend/`: React + TypeScript + Vite client using Tailwind CSS
 
