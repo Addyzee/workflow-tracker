@@ -44,7 +44,7 @@ jobs:
       packages: write
 
     env:
-      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/workflow-tracker-backend
+      IMAGE_NAME: ghcr.io/addyzee/workflow-tracker-backend
 
     steps:
       - uses: actions/checkout@v4
